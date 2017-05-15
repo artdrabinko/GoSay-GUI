@@ -170,8 +170,6 @@ class MainAuthenticationWindow(QtGui.QWidget):
         self.btnRegistration = buttonRegistration()
         self.emptyBlock = emptyBlock()
         
-        #self.btnRegistration = QtGui.QPushButton("Registration")
-        
 
         layoutForWidgetAuthenticationWindow.addWidget(self.logoWidget)
         layoutForWidgetAuthenticationWindow.addWidget(self.inputLineForLoginUser)
@@ -186,10 +184,6 @@ class MainAuthenticationWindow(QtGui.QWidget):
         self.setLayout(mainAuthenticationWindowLayout)
 
 
-
-
-#if __name__ == '__gui2.py__':
-  
 app = QtGui.QApplication(sys.argv)
 
 main = MainAuthenticationWindow()
