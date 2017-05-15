@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import sys
-from PyQt4 import QtGui, QtCore
-
+from PyQt4 import QtGui, QtCore 
+import time
+import threading
+#import QPropertyAnimation
 
 class ButtonBackRegistrationWidget(QtGui.QPushButton):
     def __init__(self,parent = None):
@@ -50,15 +52,13 @@ class HeaderRegistrationWidget(QtGui.QLabel):
         QtGui.QWidget.__init__(self, parent)
         self.setMaximumSize(270,40)
         self.setMinimumSize(270,40)
-        LayoutH = QtGui.QHBoxLayout()
-
         self.setStyleSheet('background: #5181b8; border: none;')
-        self.buttonBack = ButtonBackRegistrationWidget()
-        self.buttonBack.move(0,0) 
-        #self.buttonBack.setStyleSheet('margin-bottom: 20px;')
-        self.setLayout(LayoutH)
-
         
+        LayoutH = QtGui.QHBoxLayout()
+        self.setLayout(LayoutH)
+        
+        #self.buttonBack.setStyleSheet('margin-bottom: 20px;')
+        self.buttonBack = ButtonBackRegistrationWidget() 
         self.registrationLabel = QtGui.QLabel('Registration:')
         self.registrationLabel.setMaximumSize(240,30)
         self.registrationLabel.setMinimumSize(240,30)
@@ -70,7 +70,16 @@ class HeaderRegistrationWidget(QtGui.QLabel):
         
         
 
-    
+class ThreadDB(threading.Thread):
+        def run(self):
+            cout = 0
+            print'............Thread was active................'
+            while(True):
+                print time.ctime()
+                time.sleep(2)
+                cout = cout + 1
+                if(cout == 2):break
+            print '...........Thread was stoped...............'  
 
 
 class logoLabelWidget(QtGui.QLabel):
@@ -80,7 +89,7 @@ class logoLabelWidget(QtGui.QLabel):
         self.setMinimumSize(140,70)
         self.setText("GoSay")
         self.setStyleSheet('background-color: #5181b8; border: none; color : #edf2f8; font: bold  Arial; font-size: 46px;')
-        
+
 
 class logoWidget(QtGui.QLabel):
     def __init__(self, parent=None):
@@ -129,10 +138,13 @@ class inputLinePassword(QtGui.QLineEdit):
     def mousePressEvent(self, event):
         #self.clear()
         print 'mouse press'
+        self.setEchoMode(QtGui.QLineEdit.Password)
         
     def focusOutEvent(self,event):
         self.setStyleSheet('background-color: #5181b8; color: #a8c0dc; margin : 0px;border: none; border-bottom: 1px solid #7ca0ca;')
+        self.setEchoMode(QtGui.QLineEdit.Normal)
         self.setText('Password                                    Forgot?')
+        
 
         
     def focusInEvent(self,event):
@@ -147,7 +159,7 @@ class emtyBlockAfterEdit(QtGui.QLabel):
         self.setMaximumSize(100,0)
 
   
-class buttonLogin(QtGui.QLabel):
+class buttonLogin0(QtGui.QLabel):
     def __init__(self, parent=None):
         QtGui.QLabel.__init__(self, parent)  
         self.setMouseTracking(True)
@@ -181,7 +193,7 @@ class emptyBlock(QtGui.QLabel):
         self.setStyleSheet('border: solid;')
 
 
-class buttonRegistration(QtGui.QPushButton):
+class ButtonRegistrationWidget(QtGui.QPushButton):
     def __init__(self, parent=None):
         QtGui.QPushButton.__init__(self, parent)  
         self.setMouseTracking(True)
@@ -192,10 +204,6 @@ class buttonRegistration(QtGui.QPushButton):
         
     def mousePressEvent(self, event):
         self.setStyleSheet('background-color: #5f90c8; color: #ffffff; border: none;')
-        #self.mai = RegistrationWindow()
-        print'press 1'
-        #self.mai.show()        
-        #print 'mousePressEvent press'
         
     def mouseReleaseEvent(self, event):
         self.setStyleSheet('background-color: #6698cf; color: #ffffff; border: none;')
@@ -206,12 +214,19 @@ class buttonRegistration(QtGui.QPushButton):
         #print 'enterEvent press'
         
     def leaveEvent(self,event):
-        self.setStyleSheet('background-color: #6696cc; color: #ffffff; border: none;')
+        self.setStyleSheet(' color: #ffffff; border: none;')
         #print 'leaveEvent press'
 
 
 
 
+
+
+
+
+
+
+#.....................Build Application........................................
 
 class MainAuthenticationWindow(QtGui.QWidget):
     
@@ -220,6 +235,10 @@ class MainAuthenticationWindow(QtGui.QWidget):
         
         self.setWindowTitle('Authentication Window')
         self.setWindowIcon(QtGui.QIcon('connect.png'))
+        qr = self.frameGeometry()
+        cp = QtGui.QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())
         #first width second hight
         #290 460
         #410 460
@@ -227,76 +246,107 @@ class MainAuthenticationWindow(QtGui.QWidget):
         self.setMinimumSize(290,460)
         self.setStyleSheet('background-color: #5181b8; margin : 0px; padding: 0px;border-style: solid; border-color: #363333; border-width: 1px')
         
+        class buttonLogin(buttonLogin0):
+            def mousePressEvent(parent, event):
+                print 'lolol'
+                self.pressLoginAction()
+        
+        class ButtonRegistration(ButtonRegistrationWidget):
+            def mousePressEvent(parent, event):
+                print 'line 233'
+                self.pressRegistrationAction()
+        
+        class ButtonBackRegistration(ButtonBackRegistrationWidget):  
+            def mousePressEvent(parent, event):
+                print'line 238'
+                self.pressBackAction()
+        
+        
+   
+        class HeaderRegistration(HeaderRegistrationWidget):
+            def __init__(self,parent = None):
+                QtGui.QWidget.__init__(self, parent)
+                self.setMaximumSize(270,40)
+                self.setMinimumSize(270,40)
+                LayoutH = QtGui.QHBoxLayout()
+        
+                self.setStyleSheet('background: #5181b8; border: none;')
+                self.buttonBack = ButtonBackRegistration()
+                #self.buttonBack.setStyleSheet('margin-bottom: 20px;')
+                self.setLayout(LayoutH)
+        
+                
+                self.registrationLabel = QtGui.QLabel('Registration:')
+                self.registrationLabel.setMaximumSize(240,30)
+                self.registrationLabel.setMinimumSize(240,30)
+                self.registrationLabel.setStyleSheet('padding-top:1px;border: none;font: Arial; font-size: 18px; background: #5181b8;color: #ffffff;')
+                
+                
+                LayoutH.addWidget(self.buttonBack)
+                LayoutH.addWidget(self.registrationLabel)
+                
+                
+                
+                
+                
+                
+                
         
         mainAuthenticationWindowLayout = QtGui.QHBoxLayout()
+        self.setLayout(mainAuthenticationWindowLayout)
+        
+        
 
         layoutForWidgetAuthenticationWindow = QtGui.QVBoxLayout()
         mainAuthenticationWindowLayout.addLayout(layoutForWidgetAuthenticationWindow)
         
         
+        
         layoutForWidgetRegestrationWindow = QtGui.QVBoxLayout()
         mainAuthenticationWindowLayout.addLayout(layoutForWidgetRegestrationWindow)
-        self.RegistrationHeader = HeaderRegistrationWidget()
-        self.RegistrationHeader.setVisible(False)
+        
+        
+        
+        
+        #...................Start content Registration Form.............................
+        
+        self.RegistrationHeader = HeaderRegistration()
         #self.RegistrationHeader.setStyleSheet('background:#ffffff;')
         
-        self.lab = QtGui.QLabel('           Registration Form:')
-        self.lab.setStyleSheet('border:none;')
-        self.lab.setVisible(False)
-        self.lab.setMinimumSize(200, 420)
-        self.lab.setMaximumSize(200, 420)
+        self.emptyLabel0 = QtGui.QLabel('      Registration Form')
+        self.emptyLabel0.setStyleSheet('border:none; text-align:right;')        
+        self.emptyLabel0.setMinimumSize(200, 420)
+        self.emptyLabel0.setMaximumSize(200, 420)
         
+        self.RegistrationHeader.setVisible(False)
+        self.emptyLabel0.setVisible(False)
         
         layoutForWidgetRegestrationWindow.addWidget(self.RegistrationHeader)
-        layoutForWidgetRegestrationWindow.addWidget(self.lab)
+        layoutForWidgetRegestrationWindow.addWidget(self.emptyLabel0)
         
+        
+        #...................End content Registration Form.............................
+        
+        
+        
+        
+        
+        
+        
+        
+        #...................Start content authentification.............................
         
         #first width second hight
         self.logoWidget = logoWidget()
+        
         self.inputLineForLoginUser = inputLineLogin()
         self.inputLineForPasswordUser = inputLinePassword()
         self.emtyBlockAfterEdit = emtyBlockAfterEdit()
-        self.btnLogin = buttonLogin()
-        #self.btnRegistration = buttonRegistration()
-        self.emptyBlock = emptyBlock()
-        #self.btnRegistration = QtGui.QPushButton("Registration")
         
-        class buttonRegistration(QtGui.QPushButton):
-            def __init__(self, parent=None):
-                QtGui.QPushButton.__init__(self, parent)  
-                self.setMouseTracking(True)
-                self.setMaximumSize(250,30)
-                self.setMinimumSize(250,30)
-                self.setStyleSheet(' color: #ffffff;border:none; ')
-                self.setText('Registration')
-                
-            def mouseReleaseEvent(self, event):
-                self.setStyleSheet('background-color: #6698cf; color: #ffffff; border: none;')
-      
-            def enterEvent(self,event):
-                self.setStyleSheet('background-color: #6e9cd0; color: #ffffff; border: none;')
-
-            def leaveEvent(self,event):
-                self.setStyleSheet('background-color: #6696cc; color: #ffffff; border: none;')
-
-            def mousePressEvent(parent, event):
-                #self.mai = RegistrationWindow()  
-                #self.mai.show()                   
-                self.logoWidget.setVisible(False)
-            
-                print'press 2'
-                self.press()
-                self.inputLineForLoginUser.setVisible(False)
-                self.inputLineForPasswordUser.setVisible(False)
-                self.emtyBlockAfterEdit.setVisible(False)
-                self.btnLogin.setVisible(False)
-                self.emptyBlock.setVisible(False)
-                
-                self.btnRegistration.setVisible(False)
-                self.RegistrationHeader.setVisible(True)
-                self.lab.setVisible(True)
-                    
-        self.btnRegistration = buttonRegistration()
+        self.btnLogin = buttonLogin()
+        self.emptyBlock = emptyBlock()
+        
+        self.btnRegistration = ButtonRegistration()
         
 
         layoutForWidgetAuthenticationWindow.addWidget(self.logoWidget)
@@ -307,11 +357,61 @@ class MainAuthenticationWindow(QtGui.QWidget):
         layoutForWidgetAuthenticationWindow.addWidget(self.emptyBlock)
         layoutForWidgetAuthenticationWindow.addWidget(self.btnRegistration)
         
-         
-                
-        self.setLayout(mainAuthenticationWindowLayout)
-        self.connect(self.btnRegistration, QtCore.SIGNAL('clicked()'), self.press)
+        #...................End content authentification.............................
         
+        
+        
+        
+        
+        
+        
+        
+        #...................Start content Main User Form.............................
+        
+        MainUserWindow = QtGui.QHBoxLayout()
+        mainAuthenticationWindowLayout.addLayout(MainUserWindow)
+        
+        
+        leftLayoutMainuserWindow = QtGui.QVBoxLayout()
+        MainUserWindow.addLayout(leftLayoutMainuserWindow)
+        
+        rightLayoutMainuserWindow = QtGui.QVBoxLayout()
+        MainUserWindow.addLayout(rightLayoutMainuserWindow)
+        
+        
+        self.leftWidget = logoLabelWidget()
+        self.leftWidget.setMaximumSize(200,200)
+        self.leftWidget.setMinimumSize(200,200)
+        self.leftWidget.setStyleSheet('border:1px solid;')
+        
+        self.rightWidget = logoLabelWidget()
+        self.rightWidget.setMaximumSize(200,200)
+        self.rightWidget.setMinimumSize(200,200)
+        self.rightWidget.setStyleSheet('border: 1px solid;')
+        
+        
+        leftLayoutMainuserWindow.addWidget(self.leftWidget)
+        rightLayoutMainuserWindow.addWidget(self.rightWidget)
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        #...................End content Main User Form.............................
+
+        
+       
     def closeEvent(self, event):
             reply = QtGui.QMessageBox.question(self, 'Message',"Are you sure to quit?", QtGui.QMessageBox.Yes, QtGui.QMessageBox.No)
 
@@ -320,9 +420,91 @@ class MainAuthenticationWindow(QtGui.QWidget):
                 main.close()
             else:
                 event.ignore()
+                
+                
+    def pressRegistrationAction(self):
+        print 'press ...........start pressRegistrationAction........'
+        self.logoWidget.setVisible(False)
+        self.inputLineForLoginUser.setVisible(False)
+        self.inputLineForPasswordUser.setVisible(False)
+        self.emtyBlockAfterEdit.setVisible(False)
+        self.btnLogin.setVisible(False)
+        self.emptyBlock.setVisible(False)
+        self.btnRegistration.setVisible(False)
+        
+        
+        self.RegistrationHeader.setVisible(True)
+        self.emptyLabel0.setVisible(True)
+        newThread = ThreadDB()
+        newThread.start()
+        self.setMinimumSize(290,460)
+        self.setMaximumSize(600,460)
+        self.resize(600,460)
+        print 'press ...........end pressRegistrationAction...........'
+        
+ 
+    def pressBackAction(self):
+        print 'press ...........start pressBackAction........'
+        self.logoWidget.setVisible(True)
+        self.inputLineForLoginUser.setVisible(True)
+        self.inputLineForPasswordUser.setVisible(True)
+        self.emtyBlockAfterEdit.setVisible(True)
+        self.btnLogin.setVisible(True)
+        self.emptyBlock.setVisible(True)
+        self.btnRegistration.setVisible(False)
+        
+        
+        self.RegistrationHeader.setVisible(False)
+        self.emptyLabel0.setVisible(False)   
+        newThread = ThreadDB()
+        newThread.start()
+        
+        self.setMinimumSize(290,460)
+        self.setMaximumSize(290,460)
+        self.resize(290,460)
+       # workPlace.show()
+        print 'press ...........end pressBackAction...........'
+        
+        
+    def pressLoginAction(self):
+        print 'pressLoginAction'
+        #self.setMinimumSize(290,460)
+        #self.setMaximumSize(600,460)
+        #self.resize(600,460)
+        self.setMinimumSize(290,460)
+        self.setMaximumSize(900,900)
+        self.resize(900,700)
+        
+        self.logoWidget.setVisible(False)
+        self.inputLineForLoginUser.setVisible(False)
+        self.inputLineForPasswordUser.setVisible(False)
+        self.emtyBlockAfterEdit.setVisible(False)
+        self.btnLogin.setVisible(False)
+        self.emptyBlock.setVisible(False)
+        self.btnRegistration.setVisible(False)
+        
+        
+        
+        
+        
+        
+        
         
     def press(self):
-        print 'press 3'
+        print 'press 373'
+        
+#class workWindow(MainAuthenticationWindow):   
+   # def __init__(self,parent):
+       # self.setMinimumSize(400,400)
+       # self.setWindowTitle('Main window')
+       # qr = self.frameGeometry()
+       # cp = QtGui.QDesktopWidget().availableGeometry().center()
+       # qr.moveCenter(cp)
+       # self.move(qr.topLeft())
+       # self.setWindowIcon(QtGui.QIcon('gosay.png'))
+
+
+
 
 
 
@@ -332,6 +514,9 @@ class MainAuthenticationWindow(QtGui.QWidget):
 app = QtGui.QApplication(sys.argv)
 
 main = MainAuthenticationWindow()
+
+#workPlace = workWindow(main)
+
 main.show() 
 
-sys.exit(app.exec_())
+sys.exit(app.exec_())     
